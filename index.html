@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>School Clinic Patient Record System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family: "Segoe UI", Arial, sans-serif;
+background: linear-gradient(135deg,#dff5f3,#f7fbff);
+margin:0;
+}
+
+/* Header */
+
+.header{
+text-align:center;
+padding:30px;
+color:white;
+background:linear-gradient(135deg,#2c7a7b,#38a3a5);
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.header h1{
+margin:0;
+font-size:28px;
+}
+
+/* Container */
+
+.container{
+width:90%;
+max-width:900px;
+margin:auto;
+margin-top:30px;
+}
+
+/* Card */
+
+.card{
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 6px 15px rgba(0,0,0,0.1);
+margin-bottom:25px;
+}
+
+/* Labels */
+
+label{
+font-weight:600;
+color:#444;
+}
+
+/* Inputs */
+
+input, textarea{
+width:100%;
+padding:12px;
+margin-top:6px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+/* Buttons */
+
+button{
+padding:10px 16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-size:14px;
+transition:0.3s;
+}
+
+.add{
+background:#38a3a5;
+color:white;
+}
+
+.add:hover{
+background:#2c7a7b;
+}
+
+.edit{
+background:#ffd166;
+}
+
+.delete{
+background:#ef476f;
+color:white;
+}
+
+/* Patient card */
+
+.patient{
+background:#ffffff;
+border-radius:12px;
+padding:18px;
+margin-bottom:15px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+border-left:6px solid #38a3a5;
+}
+
+.patient strong{
+color:#2c7a7b;
+}
+
+/* Footer */
+
+.footer{
+text-align:center;
+padding:20px;
+color:#555;
+font-size:13px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+<h1>School Clinic Patient Record System</h1>
+<p>Taking care of student health</p>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Add Patient</h3>
+
+<label>Patient Name</label>
+<input type="text" id="nameInput" placeholder="Enter patient name">
+
+<label>Age</label>
+<input type="number" id="ageInput" placeholder="Enter age">
+
+<label>Health Concern</label>
+<input type="text" id="concernInput" placeholder="Example: Headache, Fever">
+
+<label>Doctor Prescription / Recita</label>
+<textarea id="recitaInput" placeholder="Doctor prescription..."></textarea>
+
+<button class="add" onclick="addPatient()">Add Record</button>
+
+</div>
+
+<div class="card">
+
+<h3>Patient Records</h3>
+
+<div id="patientList"></div>
+
+</div>
+
+</div>
+
+<div class="footer">
+School Clinic System © 2026
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", displayPatients);
+
+function getPatients(){
+return JSON.parse(localStorage.getItem("patients")) || [];
+}
+
+function savePatients(patients){
+localStorage.setItem("patients", JSON.stringify(patients));
+}
+
+function addPatient(){
+
+const name = document.getElementById("nameInput").value;
+const age = document.getElementById("ageInput").value;
+const concern = document.getElementById("concernInput").value;
+const recita = document.getElementById("recitaInput").value;
+
+if(name.trim()=="" || age.trim()=="" || concern.trim()=="" || recita.trim()==""){
+alert("Please fill all fields");
+return;
+}
+
+const patients = getPatients();
+
+patients.push({
+name:name,
+age:age,
+concern:concern,
+recita:recita
+});
+
+savePatients(patients);
+
+document.getElementById("nameInput").value="";
+document.getElementById("ageInput").value="";
+document.getElementById("concernInput").value="";
+document.getElementById("recitaInput").value="";
+
+displayPatients();
+}
+
+function displayPatients(){
+
+const patients = getPatients();
+const list = document.getElementById("patientList");
+
+list.innerHTML="";
+
+patients.forEach((p,index)=>{
+
+list.innerHTML += `
+<div class="patient">
+
+<strong>Name:</strong> ${p.name}<br>
+<strong>Age:</strong> ${p.age}<br>
+<strong>Health Concern:</strong> ${p.concern}<br>
+<strong>Doctor Recita:</strong> ${p.recita}<br><br>
+
+<button class="edit" onclick="editPatient(${index})">Edit</button>
+<button class="delete" onclick="deletePatient(${index})">Delete</button>
+
+</div>
+`;
+
+});
+
+}
+
+function deletePatient(index){
+
+const patients = getPatients();
+patients.splice(index,1);
+
+savePatients(patients);
+displayPatients();
+
+}
+
+function editPatient(index){
+
+const patients = getPatients();
+
+const newName = prompt("Edit Name:",patients[index].name);
+const newAge = prompt("Edit Age:",patients[index].age);
+const newConcern = prompt("Edit Health Concern:",patients[index].concern);
+const newRecita = prompt("Edit Doctor Recita:",patients[index].recita);
+
+if(newName && newAge && newConcern && newRecita){
+
+patients[index].name = newName;
+patients[index].age = newAge;
+patients[index].concern = newConcern;
+patients[index].recita = newRecita;
+
+}
+
+savePatients(patients);
+displayPatients();
+
+}
+
+</script>
+
+</body>
+</html>
